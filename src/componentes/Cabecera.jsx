@@ -3,16 +3,16 @@ import Swal from 'sweetalert2';
 
 export const Cabecera = () => {
     
-    const {total, cantidad} = useStoreCustom()
+    const {total, cantidad, venderTodo} = useStoreCustom()
     
     const handlePagar = () => {
         Swal.fire({
             title:"Gracias por su compra",
-            text: `Se ha llevado unos ${cantidad} articulos por Gs. ${total}`,
+            html: `Se ha llevado unos ${cantidad} articulos por Gs. ${total}`,
             icon: "success"
         }).then(
             (resultado) => {
-                 
+                 venderTodo()
             }
         )
     }
