@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Base } from "../layout/Base"
-import { obtenerProductos } from "../ganchos/useProductos"
+import { useProductos } from "../ganchos/useProductos"
 import { Tarjeta } from "../componentes/Tarjeta"
 
 export const Productos = () => {
@@ -9,7 +9,7 @@ export const Productos = () => {
 
     useEffect(
         () => {
-            obtenerProductos().then(
+            useProductos().then(
                 r => {
                     setListado(r)
                 }

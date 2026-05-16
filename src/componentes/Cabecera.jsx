@@ -1,66 +1,72 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Menu } from './Menu'
-import { useStoreCustom } from '../contexto/carrito'
-import { formatearGuaranies } from '../utilidades/formato'
+import Swal from "sweetalert2";
+import { useStoreCustom } from "../contexto/carrito";
+import { Boton } from "./Boton";
+import { Menu } from "./Menu";
+
+const formatearGuaranies = (monto) => {
+  return new Intl.NumberFormat("es-PY", {
+    style: "currency",
+    currency: "PYG",
+    maximumFractionDigits: 0,
+  }).format(monto);
+};
 
 export const Cabecera = () => {
-  const [menuAbierto, setMenuAbierto] = useState(false)
-  const cantidad = useStoreCustom((state) => state.cantidad)
-  const total = useStoreCustom((state) => state.total)
+  const { total, cantidad, venderTodo } = useStoreCustom();
+
+  const handlePagar = () => {
+    if (cantidad === 0) {
+      Swal.fire({
+        title: "Carrito vacío",
+        text: "Agrega productos antes de realizar el pago.",
+        icon: "info",
+        confirmButtonText: "Entendido",
+      });
+
+      return;
+    }
+
+    Swal.fire({
+      title: "Gracias por su compra",
+      html: `Se ha llevado ${cantidad} artículo(s) por ${formatearGuaranies(total)}.`,
+      icon: "success",
+      confirmButtonText: "Aceptar",
+    }).then(() => {
+      venderTodo();
+    });
+  };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-950 text-lg font-black text-white shadow-sm">
-            PI
-          </span>
-          <span className="leading-tight">
-            <span className="block text-sm font-black tracking-tight text-slate-950 sm:text-base">
-              Proyecto Integrador
-            </span>
-            <span className="hidden text-xs text-slate-500 sm:block">
-              Tienda simple con React
-            </span>
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500">
+              Tienda online
+            </p>
+            <h1 className="text-xl font-black tracking-tight text-slate-950">
+              Proyecto Tienda Online
+            </h1>
+          </div>
+        </div>
 
-        <Menu />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:gap-6">
+          <Menu />
 
-        <div className="flex items-center gap-2">
-          <Link
-            to="/carrito"
-            className="hidden rounded-2xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:inline-flex"
-          >
-            🛒 {cantidad} · {formatearGuaranies(total)}
-          </Link>
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-2">
+            <div className="px-2">
+              <p className="text-xs text-slate-500">Carrito</p>
+              <p className="text-sm font-bold text-slate-900">
+                {cantidad} producto(s) · {formatearGuaranies(total)}
+              </p>
+            </div>
 
-          <button
-            type="button"
-            onClick={() => setMenuAbierto((actual) => !actual)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition hover:bg-slate-200 md:hidden"
-            aria-label="Abrir menú"
-            aria-expanded={menuAbierto}
-          >
-            {menuAbierto ? '✕' : '☰'}
-          </button>
+            <Boton variante="acento" tamanio="sm" onClick={handlePagar}>
+              Pagar
+            </Boton>
+          </div>
         </div>
       </div>
-
-      {menuAbierto && (
-        <div className="border-t border-slate-200 bg-white px-4 py-4 shadow-sm md:hidden">
-          <Menu modoMovil onNavigate={() => setMenuAbierto(false)} />
-          <Link
-            to="/carrito"
-            onClick={() => setMenuAbierto(false)}
-            className="mt-3 flex items-center justify-between rounded-2xl bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700"
-          >
-            <span>Carrito</span>
-            <span>{cantidad} · {formatearGuaranies(total)}</span>
-          </Link>
-        </div>
-      )}
     </header>
-  )
-}
+  );
+};

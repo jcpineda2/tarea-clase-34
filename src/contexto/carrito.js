@@ -8,7 +8,7 @@ export const useStoreCustom = create((set) =>({
         total: state.total+parseInt(monto)}
     )),
     venderTodo: () => set(
-        (state) =>({
+        () =>({
             cantidad:0,
             total:0
         })
